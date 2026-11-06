@@ -10,7 +10,11 @@
 # emptyDir symlink approach wrote the symlink into a different volume than the
 # app mounted, so no socket ever reached the container.)
 #
-# Node runtime here is Docker (Rancher Desktop + k3s), socket at /run/docker.sock.
+# Node runtime here is Docker (Rancher Desktop + k3s). Under WSL2, Rancher
+# Desktop's actual host-facing socket lives at
+# /mnt/wsl/rancher-desktop/run/docker.sock, not /run/docker.sock — the plain
+# path resolves to a tmpfs stub on this setup since the WSL2 node filesystem
+# and the Rancher Desktop VM filesystem are not the same namespace.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,10 +45,17 @@ spec:
             name: docker-sock
           - mountPath: /run/docker.sock
             name: docker-sock
+          # CRI-level socket (cri-dockerd shim in front of Docker), for crictl.
+          - mountPath: /run/k3s/cri-dockerd/cri-dockerd.sock
+            name: cri-dockerd-sock
       volumes:
         - name: docker-sock
           hostPath:
-            path: /run/docker.sock
+            path: /mnt/wsl/rancher-desktop/run/docker.sock
+            type: Socket
+        - name: cri-dockerd-sock
+          hostPath:
+            path: /run/k3s/cri-dockerd/cri-dockerd.sock
             type: Socket
 ---
 apiVersion: v1

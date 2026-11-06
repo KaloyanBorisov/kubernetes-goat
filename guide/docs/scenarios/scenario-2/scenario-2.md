@@ -72,7 +72,7 @@ If you are able to obtain container images in the host system then you have comp
 
 - As we can see it returns the response for the `id` command, now we can analyze the system and see what potential information we can obtain
 
-- It contains `containerd.sock` mounted into the file system as it's not available commonly in standard systems
+- It contains the host's container-runtime socket mounted into the file system — not available commonly in standard systems
 
 ```bash
 ; mount
@@ -80,11 +80,13 @@ If you are able to obtain container images in the host system then you have comp
 
 ![Scenario 2 mount](../images/sc-2-3.png)
 
-- Wow! we can see the `/custom/containerd/containerd.sock` mounted in the file system and assuming it's mounted from the host system we need to talk to it for communicating with the UNIX socket
+- Wow! we can see `docker.sock` mounted into the container filesystem (both at `/run/docker.sock` and `/var/run/docker.sock`) and assuming it's mounted from the host system we need to talk to it for communicating with the UNIX socket
 
 :::tip
 
-We can use multiple methods for communicating with the `containerd.sock` UNIX socket. Some of them include [crictl binary](https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md), or a simple `curl` program as well.  
+Depending on how the node's container runtime is set up, you may find a plain `docker.sock` (Docker Engine API), a `containerd.sock` (CRI/containerd API), or — as in this walkthrough — a `cri-dockerd.sock`, which is the CRI shim that sits in front of Docker and is what `crictl` actually needs to talk to when the node runtime is Docker rather than containerd directly. If `mount` doesn't show it, check paths like `/run/<runtime>/<runtime>.sock` or `/run/k3s/cri-dockerd/cri-dockerd.sock` — the exact location depends on the node's distro/runtime (k3s, Rancher Desktop, Docker Desktop, kind, etc.), and under WSL2 it can even live outside the plain `/run` path entirely (e.g. `/mnt/wsl/rancher-desktop/run/docker.sock` for Rancher Desktop).
+
+We can use multiple methods for communicating with these UNIX sockets. For a raw `docker.sock`, a simple `curl --unix-socket` against the Docker Engine API works directly (e.g. `curl --unix-socket /run/docker.sock http://localhost/containers/json`). For a CRI socket (`containerd.sock` or `cri-dockerd.sock`), use the [crictl binary](https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md) instead — `crictl` speaks CRI, not the Docker Engine API, so pointing it at a plain `docker.sock` will fail to connect.
 
 :::
 
@@ -108,13 +110,23 @@ We can use multiple methods for communicating with the `containerd.sock` UNIX so
 
 ![Scenario 2 extract binary](../images/sc-2-4.png)
 
-- Now we can access the host system by running the following crictl commands with passing `containerd.sock` UNIX socket
+- Now we can access the host system by running the following crictl commands, passing the CRI UNIX socket we found mounted (a `cri-dockerd.sock` in this walkthrough, since the node runtime is Docker fronted by the cri-dockerd shim):
 
 ```bash
-;/tmp/crictl -r unix:///custom/containerd/containerd.sock images
+;/tmp/crictl -r unix:///run/k3s/cri-dockerd/cri-dockerd.sock images
 ```
 
 ![Scenario 2 list host images](../images/sc-2-6.png)
+
+:::tip
+
+If the mounted socket is a plain `docker.sock` instead (Docker Engine API, not CRI), `crictl` won't connect to it at all — use `curl --unix-socket` against the Docker API directly instead, e.g.:
+
+```bash
+;curl -s --unix-socket /run/docker.sock http://localhost/containers/json
+```
+
+:::
 
 - Hooray 🥳 , now we can see that it has a lot of container images in the host system. We can now use different crictl commands to gain more access and further exploitation
 
