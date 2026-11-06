@@ -1,13 +1,24 @@
-# Simple Multi-Runtime Socket Approach (Alternative)
-# Use this if you prefer not to use init containers
-# Simply mount multiple socket locations and let your app try them
-
+# Simple Multi-Runtime Socket Approach (Alternative, no init container)
+#
+# Apply this INSTEAD OF deployment.yaml (not alongside it) — it reuses the
+# same Service selector (app: health-check), so running both would make the
+# Service bounce between the two pods.
+#
+# Fix vs. the original: the host socket is mounted with `type: Socket` instead
+# of `type: DirectoryOrCreate`. DirectoryOrCreate silently creates an empty
+# directory when the path is absent (or isn't a socket), which is why the old
+# multi-path version handed the pod empty dirs instead of a usable socket.
+# `type: Socket` makes the pod fail fast if the socket isn't where expected.
+#
+# This node runs Docker (Rancher Desktop + k3s), socket at /run/docker.sock.
+# For a CONTAINERD node (EKS/GKE/kind/minikube-containerd), delete the
+# docker-sock volume + its two mounts and uncomment the containerd block below.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: health-check-deployment-simple
   annotations:
-    description: "Simple version without init container - mounts multiple socket paths"
+    description: "Simple version without init container - direct host socket mount"
 spec:
   selector:
     matchLabels:
@@ -29,36 +40,23 @@ spec:
         securityContext:
           privileged: true
         volumeMounts:
-          # Primary: Try containerd first (most common in managed K8s)
-          - mountPath: /run/containerd/containerd.sock
-            name: containerd-sock
-            readOnly: true
-          # Secondary: Fallback to Docker socket (common path)
+          # Docker node: expose the one real host socket at both common paths.
           - mountPath: /var/run/docker.sock
             name: docker-sock
-            readOnly: true
-          # Tertiary: Alternative Docker socket path
           - mountPath: /run/docker.sock
-            name: docker-sock-alt
-            readOnly: true
+            name: docker-sock
+          # Containerd node: uncomment this and the matching volume below.
+          # - mountPath: /run/containerd/containerd.sock
+          #   name: containerd-sock
       volumes:
-        # Containerd socket (EKS, GKE, KinD, Minikube with Containerd)
-        - name: containerd-sock
-          hostPath:
-            path: /run/containerd/containerd.sock
-            type: DirectoryOrCreate  # Won't fail if socket doesn't exist
-        
-        # Docker socket primary path (Docker Desktop, some K8s installations)
         - name: docker-sock
           hostPath:
-            path: /var/run/docker.sock
-            type: DirectoryOrCreate
-        
-        # Docker socket alternative path (some Minikube configurations)
-        - name: docker-sock-alt
-          hostPath:
             path: /run/docker.sock
-            type: DirectoryOrCreate
+            type: Socket   # fail fast if the socket is missing (no empty-dir trap)
+        # - name: containerd-sock
+        #   hostPath:
+        #     path: /run/containerd/containerd.sock
+        #     type: Socket
 
 ---
 apiVersion: v1

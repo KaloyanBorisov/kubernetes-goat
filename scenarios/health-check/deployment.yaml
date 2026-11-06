@@ -1,3 +1,16 @@
+# DIND (docker-in-docker) exploitation scenario.
+#
+# Intentionally vulnerable: the container runs privileged AND the host's
+# container-runtime socket is mounted in, which turns a web-app command
+# injection into full node-runtime control.
+#
+# The host Docker socket is mounted directly with `type: Socket` so the pod
+# fails fast if the socket is missing, instead of the kubelet silently
+# creating an empty directory in its place. (The previous init-container +
+# emptyDir symlink approach wrote the symlink into a different volume than the
+# app mounted, so no socket ever reached the container.)
+#
+# Node runtime here is Docker (Rancher Desktop + k3s), socket at /run/docker.sock.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,45 +24,6 @@ spec:
       labels:
         app: health-check
     spec:
-      # Init container to detect and link the correct container runtime socket
-      initContainers:
-      - name: detect-runtime-socket
-        image: busybox:latest
-        command: 
-        - sh
-        - -c
-        - |
-          echo "Detecting container runtime socket..."
-          if [ -S /host-root/run/containerd/containerd.sock ]; then
-            echo "✓ Found containerd socket at /run/containerd/containerd.sock"
-            mkdir -p /socket-link
-            ln -sf /host-root/run/containerd/containerd.sock /socket-link/container.sock
-          elif [ -S /host-root/var/run/docker.sock ]; then
-            echo "✓ Found docker socket at /var/run/docker.sock"
-            mkdir -p /socket-link
-            ln -sf /host-root/var/run/docker.sock /socket-link/container.sock
-          elif [ -S /host-root/run/docker.sock ]; then
-            echo "✓ Found docker socket at /run/docker.sock"
-            mkdir -p /socket-link
-            ln -sf /host-root/run/docker.sock /socket-link/container.sock
-          else
-            echo "⚠ Warning: No container runtime socket found!"
-            echo "  Checked paths:"
-            echo "  - /run/containerd/containerd.sock"
-            echo "  - /var/run/docker.sock"
-            echo "  - /run/docker.sock"
-            echo "  Application may fail if it requires socket access"
-            mkdir -p /socket-link
-          fi
-          echo "Socket detection completed"
-        volumeMounts:
-        - name: host-root
-          mountPath: /host-root
-          readOnly: true
-        - name: socket-link
-          mountPath: /socket-link
-        securityContext:
-          privileged: true
       containers:
       - name: health-check
         image: madhuakula/k8s-goat-health-check
@@ -59,43 +33,19 @@ spec:
             cpu: "30m"
         ports:
         - containerPort: 80
-      # Custom Stuff
         securityContext:
           privileged: true
         volumeMounts:
-          # Legacy mount path for backward compatibility
-          - mountPath: /custom/containerd/containerd.sock
-            name: container-socket-unified
-            subPath: container.sock
-          # Alternative mount path
+          # Same host socket exposed at both common paths so either works.
           - mountPath: /var/run/docker.sock
-            name: container-socket-unified
-            subPath: container.sock
-          # Standard path used by most tools
+            name: docker-sock
           - mountPath: /run/docker.sock
-            name: container-socket-unified
-            subPath: container.sock
+            name: docker-sock
       volumes:
-        # Host mount for init container detection
-        - name: host-root
+        - name: docker-sock
           hostPath:
-            path: /
-            type: Directory
-        # Symlinks to the host systems container management sockets
-        - name: socket-link
-          emptyDir: {}
-        # Unified socket volume created by init container
-        - name: container-socket-unified
-          emptyDir: {}
-        # Fallback direct mounts (if init container can't be used or for direct access)
-        - name: containerd-sock-volume-fallback
-          hostPath:
-            path: /run/containerd/containerd.sock
-            type: DirectoryOrCreate
-        - name: docker-sock-volume-fallback
-          hostPath:
-            path: /var/run/docker.sock
-            type: DirectoryOrCreate
+            path: /run/docker.sock
+            type: Socket
 ---
 apiVersion: v1
 kind: Service
