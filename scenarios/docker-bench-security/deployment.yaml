@@ -127,12 +127,12 @@ spec:
         - name: docker-sock-volume
           hostPath:
             path: /var/run/docker.sock
-            type: DirectoryOrCreate
+            # no type check: this is a socket where it exists
         - name: docker-sock-fallback
           hostPath:
             path: /run/docker.sock
-            type: DirectoryOrCreate
+            # no type check: this is a socket where it exists
         - name: containerd-sock-volume
           hostPath:
             path: /run/containerd/containerd.sock
-            type: DirectoryOrCreate
+            # no type check: this is a socket where it exists
