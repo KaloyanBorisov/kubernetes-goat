@@ -59,6 +59,12 @@ spec:
           image: madhuakula/hacker-container
           imagePullPolicy: Always
           command: ["/bin/sh", "-c", "sleep infinity"]
+          env:
+            # The image's docker CLI (19.03) speaks API 1.40, which Docker 25+
+            # rejects (minimum 1.41). The old client works fine when pinned
+            # to 1.41, so docker-bench-security.sh can run unmodified.
+            - name: DOCKER_API_VERSION
+              value: "1.41"
           resources:
             requests:
               cpu: 20m
