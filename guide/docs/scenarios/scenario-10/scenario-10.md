@@ -73,7 +73,7 @@ Identify all resources within a Kubernetes cluster. If possible get into details
 - Once we have identified the job in the Kubernetes cluster, we can obtain the pod information by running the following command
 
 ```bash
-kubectl describe job batch-check-job
+kubectl describe job scenario-10-batch-check-job
 ```
 
 ![Scenario 10 get job info](../images/sc-10-2.png)
@@ -81,13 +81,13 @@ kubectl describe job batch-check-job
 - Then get the pod information by running the below command which showcases the pods with the labels and selectors matching
 
 ```bash
-kubectl get pods --namespace default -l "job-name=batch-check-job"
+kubectl get pods --namespace default -l "job-name=scenario-10-batch-check-job"
 ```
 
 - We can get all the information of the pod spec by running the following command, which returns the entire manifest information in the `YAML` output format
 
 ```bash
-kubectl get pod batch-check-job-xxxx -o yaml
+kubectl get pod scenario-10-batch-check-job-xxxx -o yaml
 ```
 
 ![Scenario 10 get pod info](../images/sc-10-3.png)

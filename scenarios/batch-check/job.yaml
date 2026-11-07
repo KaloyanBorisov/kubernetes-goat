@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: batch-check-job
+  name: scenario-10-batch-check-job
 spec:
   template:
     metadata:
-      name: batch-check-job
+      name: scenario-10-batch-check-job
     spec:
       containers:
       - name: batch-check

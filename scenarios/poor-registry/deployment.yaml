@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: poor-registry-deployment
+  name: scenario-7-poor-registry-deployment
   namespace: default
 spec:
   selector:

@@ -84,7 +84,7 @@ kubectl get pods
 - Once we have identified the pod, then we can get the audit results by running the following command. Make sure to replace the pod name in the following command
 
 ```bash
-kubectl logs -f kube-bench-node-xxxxx
+kubectl logs -f scenario-6-kube-bench-node-xxxxx
 ```
 
 ![Scenario 6 Kube bench output](../images/sc-6-2.png)

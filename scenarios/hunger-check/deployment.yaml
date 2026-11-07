@@ -55,7 +55,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hunger-check-deployment
+  name: scenario-13-hunger-check-deployment
   namespace: big-monolith
 spec:
   selector:

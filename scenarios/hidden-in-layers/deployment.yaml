@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: hidden-in-layers
+  name: scenario-15-hidden-in-layers
 spec:
   template:
     metadata:
-      name: hidden-in-layers
+      name: scenario-15-hidden-in-layers
     spec:
       containers:
       - name: hidden-in-layers
