@@ -2,7 +2,7 @@
 scenario: 9
 title: Helm v2 tiller to PwN the cluster
 notes:
-    - kubectl run --rm --restart=Never -it --image=madhuakula/k8s-goat-helm-tiller -- bash
+    - kubectl run scenario-9-helm-tiller --rm --restart=Never -it --image=madhuakula/k8s-goat-helm-tiller -- bash
 label: Scenario
 ---
 

@@ -11,7 +11,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scenario-4-system-monitor-deployment
+  name: scenario-4-12-system-monitor-deployment
   namespace: default
 spec:
   selector:

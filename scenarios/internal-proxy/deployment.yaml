@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scenario-3-internal-proxy-deployment
+  name: scenario-3-8-internal-proxy-deployment
   namespace: default
   labels:
     app: internal-proxy

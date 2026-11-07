@@ -2,7 +2,7 @@
 scenario: 14
 title: Hacker container preview
 notes:
-    - kubectl run -it hacker-container --image=madhuakula/hacker-container -- sh
+    - kubectl run -it scenario-14-hacker-container --image=madhuakula/hacker-container -- sh
 label: Scenario
 ---
 

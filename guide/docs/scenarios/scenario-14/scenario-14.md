@@ -28,7 +28,7 @@ This scenario is just an exploration of the common security utilities inside the
 - To get started with this scenario, run the hacker container using the following command
 
 ```bash
-kubectl run -it hacker-container --image=madhuakula/hacker-container -- sh
+kubectl run -it scenario-14-hacker-container --image=madhuakula/hacker-container -- sh
 ```
 
 :::

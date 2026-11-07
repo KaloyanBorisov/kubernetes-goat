@@ -35,7 +35,7 @@ Helm is a package manager for Kubernetes. It's like `apt-get` for ubuntu. In thi
 - To get started with the scenario, run the following command
 
 ```bash
-kubectl run --rm --restart=Never -it --image=madhuakula/k8s-goat-helm-tiller -- bash
+kubectl run scenario-9-helm-tiller --rm --restart=Never -it --image=madhuakula/k8s-goat-helm-tiller -- bash
 ```
 :::
 
