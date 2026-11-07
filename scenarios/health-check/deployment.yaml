@@ -18,7 +18,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: health-check-deployment
+  name: scenario-2-health-check-deployment
 spec:
   selector:
     matchLabels:

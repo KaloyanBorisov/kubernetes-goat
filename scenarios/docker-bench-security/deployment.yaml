@@ -12,7 +12,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: docker-bench-security
+  name: scenario-5-docker-bench-security
   labels:
     name: docker-bench
 spec:

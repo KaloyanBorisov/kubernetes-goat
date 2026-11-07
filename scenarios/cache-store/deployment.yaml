@@ -20,7 +20,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: secure-middleware
-  name: cache-store-deployment
+  name: scenario-11-cache-store-deployment
   labels:
     app: cache-store
 spec:

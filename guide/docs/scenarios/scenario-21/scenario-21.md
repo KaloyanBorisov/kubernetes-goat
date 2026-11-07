@@ -129,7 +129,7 @@ tar -xvzf tetra-linux-amd64.tar.gz
 - Now you can run the following command to pass the output of the Tetragon events to `tetra` cli locally to see in a nicer way
 
 ```bash
-kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c export-stdout -f | ./tetra getevents -o compact --namespace default --pod system-monitor-deployment-*
+kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c export-stdout -f | ./tetra getevents -o compact --namespace default --pod scenario-4-system-monitor-deployment-*
 ```
 
 ![Scenario 21 tetragon detecting /etc/shadow using tetra cli](../images/sc-21-3.png)
@@ -156,7 +156,7 @@ nsenter -t 1 -m --uts --ipc --pid
 - As you can see following, Tetragon in action detecting these attacks in near real-time
 
 ```bash
-kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c export-stdout -f | ./tetra getevents -o compact --namespace default --pod system-monitor-deployment-*
+kubectl logs -n kube-system -l app.kubernetes.io/name=tetragon -c export-stdout -f | ./tetra getevents -o compact --namespace default --pod scenario-4-system-monitor-deployment-*
 ```
 
 ![Scenario 21 tetragon detecting container escape](../images/sc-21-5.png)

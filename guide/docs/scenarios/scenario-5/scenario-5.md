@@ -37,7 +37,7 @@ kubectl apply -f scenarios/docker-bench-security/deployment.yaml
 - To exec into the pod, we can run the following command. Make sure to replace the pod name
 
 ```bash
-kubectl exec -it docker-bench-security-xxxxx -- sh
+kubectl exec -it scenario-5-docker-bench-security-xxxxx -- sh
 ```
 
 :::
@@ -79,12 +79,12 @@ kubectl get pods
 
 ![Scenario 5 Docker bench DS](../images/sc-5-1.png)
 
-- Now we can see pods are running with `docker-bench-security-xxxxx` and we can use one of the pods and exec into it for performing the audit
+- Now we can see pods are running with `scenario-5-docker-bench-security-xxxxx` and we can use one of the pods and exec into it for performing the audit
 
-- Access the `docker-bench-security-xxxxx` pod by running the following command
+- Access the `scenario-5-docker-bench-security-xxxxx` pod by running the following command
 
 ```bash
-kubectl exec -it docker-bench-security-xxxxx -- sh
+kubectl exec -it scenario-5-docker-bench-security-xxxxx -- sh
 ```
 
 - The docker-bench-security is already installed inside the container and you can navigate to the respective directory for performing the scan

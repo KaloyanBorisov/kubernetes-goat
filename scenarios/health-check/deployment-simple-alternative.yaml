@@ -16,7 +16,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: health-check-deployment-simple
+  name: scenario-2-health-check-deployment-simple
   annotations:
     description: "Simple version without init container - direct host socket mount"
 spec:

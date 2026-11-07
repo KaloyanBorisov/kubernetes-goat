@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kube-bench-node
+  name: scenario-6-kube-bench-node
 spec:
   template:
     spec:
