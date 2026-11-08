@@ -4,7 +4,7 @@ title: Cilium Tetragon - eBPF-based Security Observability and Runtime Enforceme
 notes:
     - helm repo add cilium https://helm.cilium.io
     - helm repo update
-    - helm install tetragon cilium/tetragon -n kube-system
+    - helm install scenario-21-tetragon cilium/tetragon -n kube-system
 label: Scenario
 ---
 

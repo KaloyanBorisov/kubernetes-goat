@@ -4,7 +4,7 @@ title: Falco - Runtime security monitoring & detection
 notes:
     - helm repo add falcosecurity https://falcosecurity.github.io/charts
     - helm repo update
-    - helm install falco falcosecurity/falco
+    - helm install scenario-18-falco falcosecurity/falco
 label: Scenario
 ---
 

@@ -44,7 +44,7 @@ helm repo update
 ```
 
 ```bash
-helm install falco falcosecurity/falco
+helm install scenario-18-falco falcosecurity/falco
 ```
 
 :::
@@ -102,7 +102,7 @@ Deploy the Falco and detect security events in near real-time using the pre-defi
 - Get more details about the Falco deployment by running the following command
 
 ```bash
-kubectl get pods --selector app=falco
+kubectl get pods --selector app.kubernetes.io/name=falco
 ```
 
 ![Scenario 18 falco get pods](../images/sc-18-2.png)
@@ -110,13 +110,13 @@ kubectl get pods --selector app=falco
 - Manually obtaining the logs from the Falco systems using the following command
 
 ```bash
-kubectl logs -f -l app=falco
+kubectl logs -f -l app.kubernetes.io/name=falco -c falco
 ```
 
 - Now, let's spin up a hacker container and read a sensitive file and see if that detects by Falco
 
 ```bash
-kubectl run --rm --restart=Never -it --image=madhuakula/hacker-container -- bash
+kubectl run scenario-18-hacker-container --rm --restart=Never -it --image=madhuakula/hacker-container -- bash
 ```
 
 - Let's read the sensitive file `/etc/shadow`

@@ -44,13 +44,15 @@ helm repo update
 ```
 
 ```bash
-helm install tetragon cilium/tetragon -n kube-system
+helm install scenario-21-tetragon cilium/tetragon -n kube-system
 ```
+
+- If the `scenario-21-tetragon-operator` pod crash-loops with `Unable to Register CRDs` (older Kubernetes such as 1.27 rejects the newer CRD validation rules), install an older chart instead by adding `--version 1.4.1`
 
 - You can verify that the Tetragon pods are in running state by running the following command
 
 ```bash
-kubectl rollout status -n kube-system ds/tetragon -w
+kubectl rollout status -n kube-system ds/scenario-21-tetragon -w
 ```
 
 :::
@@ -95,7 +97,7 @@ When used in a Kubernetes environment, Tetragon is Kubernetes-aware - that is, i
 - Get more details about the Tetragon deployment by running the following command
 
 ```bash
-kubectl get pods -n kube-system --selector app.kubernetes.io/instance=tetragon
+kubectl get pods -n kube-system --selector app.kubernetes.io/instance=scenario-21-tetragon
 ```
 
 - Manually obtaining the logs from the Tetragon using the following command

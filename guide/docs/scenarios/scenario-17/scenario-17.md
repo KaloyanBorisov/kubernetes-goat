@@ -26,10 +26,10 @@ This scenario is mainly to perform the audit of the Kubernetes Cluster for vario
 
 :::info
 
-To get started with this scenario you can run the following command to start the `hacker-container` with cluster administrator privileges (as the tiller service account already has that)
+To get started with this scenario you can run the following command to start the `hacker-container` with cluster administrator privileges (using the `superadmin` service account from the insecure RBAC setup, which is bound to `cluster-admin`)
 
 ```bash
-kubectl run -n kube-system --serviceaccount=tiller --rm --restart=Never -it --image=madhuakula/hacker-container -- bash
+kubectl run scenario-17-kubeaudit -n kube-system --overrides='{"spec":{"serviceAccountName":"superadmin"}}' --rm --restart=Never -it --image=madhuakula/hacker-container -- bash
 ```
 
 :::
@@ -69,10 +69,10 @@ Refer to [https://github.com/Shopify/kubeaudit](https://github.com/Shopify/kubea
 
 :::
 
-- To get started with this scenario you can run the following command to start the `hacker-container` with cluster administrator privileges (as the tiller service account already has that)
+- To get started with this scenario you can run the following command to start the `hacker-container` with cluster administrator privileges (using the `superadmin` service account from the insecure RBAC setup, which is bound to `cluster-admin`)
 
 ```bash
-kubectl run -n kube-system --serviceaccount=tiller --rm --restart=Never -it --image=madhuakula/hacker-container -- bash
+kubectl run scenario-17-kubeaudit -n kube-system --overrides='{"spec":{"serviceAccountName":"superadmin"}}' --rm --restart=Never -it --image=madhuakula/hacker-container -- bash
 ```
 
 - Run the `kubeaudit` in cluster mode. Kubeaudit can detect if it is running within a container in a cluster. If so, it will try to audit all Kubernetes resources in that cluster
